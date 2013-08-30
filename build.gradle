@@ -4,7 +4,7 @@ allprojects {
     apply plugin: 'groovy'
     apply plugin: 'idea'
     group = 'org.gradle.api.plugins'
-    version = '0.9.9'
+    version = '0.9.9.1-SNAPSHOT'
     defaultTasks 'clean', 'build', 'createAllDeliverables'
 }
 
@@ -31,7 +31,7 @@ task uberJar(type: Jar, dependsOn: subprojects.assemble) {
     }
 
     manifest {
-        attributes 'Implementation-Title': 'Gradle Tomcat plugin',
+        attributes 'Implementation-Title': 'Gradle Tomcat plugin (Edd Grant temporary fork)',
                    'Implementation-Version': version,
                    'Built-By': System.getProperty('user.name'),
                    'Built-Date': new Date(),
@@ -92,7 +92,7 @@ artifacts {
 }
 
 ext.pomConfiguration = {
-    name 'Gradle Tomcat plugin'
+    name 'Gradle Tomcat plugin (Edd Grant temporary fork)'
     description 'Gradle plugin supporting deployment of your web application to an embedded Tomcat web container.'
     url 'https://github.com/bmuschko/gradle-tomcat-plugin'
     inceptionYear '2010'
@@ -117,6 +117,11 @@ ext.pomConfiguration = {
             name 'Benjamin Muschko'
             email 'benjamin.muschko@gmail.com'
         }
+        developer {
+            id 'ieddgrant'
+            name 'Edd Grant'
+            email 'edd@eddgrant.com'
+        }
     }
 }
 
@@ -124,6 +129,19 @@ install {
     repositories.mavenInstaller {
         pom.project pomConfiguration
     }
+}
+
+if(hasProperty('artifactoryUsername') && hasProperty('artifactoryPassword') && hasProperty('artifactoryUploadUrl')) {
+  uploadArchives {
+      repositories {
+          mavenDeployer {
+              repository(url: artifactoryUploadUrl) {
+                  authentication(userName: artifactoryUsername, password: artifactoryPassword)
+              }
+	      pom.artifactId = "gradle-tomcat-plugin-eddgrant-fork"
+          }
+      }
+  }
 }
 
 if(hasProperty('nexusUsername') && hasProperty('nexusPassword')) {
